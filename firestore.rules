@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isWhitelisted() {
+      return request.auth != null
+        && request.auth.token.email in ['vitortaboasfraga@gmail.com', 'catielen.p@gmail.com'];
+    }
+
+    function hasIdentityFields() {
+      return request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.userEmail == request.auth.token.email;
+    }
+
+    match /transactions/{transactionId} {
+      allow get, list: if isWhitelisted();
+      allow create, update: if isWhitelisted() && hasIdentityFields();
+      allow delete: if isWhitelisted();
+    }
+
+    match /balance/{balanceId} {
+      allow get, list: if isWhitelisted() && balanceId == 'shared_balance';
+      allow create, update: if isWhitelisted() && balanceId == 'shared_balance' && hasIdentityFields();
+      allow delete: if false;
+    }
+  }
+}
