@@ -1,4 +1,4 @@
-const exchangeRateApi =import.meta.env.AWESOME_API_URL;
+const exchangeRateApi =import.meta.env.VITE_AWESOME_API_URL;
 
 export async function getDkkToBrlRate(): Promise<number> {
   const response = await fetch(exchangeRateApi);
